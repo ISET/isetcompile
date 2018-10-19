@@ -36,10 +36,10 @@ The main directory of a function within the repository is called **functionName*
       jsonFile = p.Results.jsonfile;
       params = jsonread(jsonFile);      % From the jsonio library
       
-  Any user-specified parameters will be in the struct params.<variableName> that is returned by the jsonread.  We expect that you will have written these parameters to a json file using
+  Any user-specified parameters will be in the struct (**params.variableNames**) returned by the jsonread.  We expect that you will write these parameters to a json file using this type of logic
   
       params = c_functionNameParams;    % Returns the default values
-      params.var1 = newValue;           % Over-write the default
+      params.var1 = newVar1;            % Over-write the default
       jsonwrite(jsonFile,params);       % Save a json file with the parameters
       
   For an example, look at sensorCompute. 
