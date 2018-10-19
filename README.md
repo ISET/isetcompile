@@ -6,9 +6,9 @@ We are developing systematic methods to create 'compiled' Matlab functions.  We 
 
 The main directory of a function within the repository is called **functionName**.  Each such directory contains at least three functions.
 
- **c_functionName.m** for the main routine.
- **c_functionNameParams.m** to return a Matlab struct with all of the parameters needed in the main function.
- **c_functionNameBuild.m** to run the Matlab compiler (mcc) 
+ * **c_functionName.m** for the main routine.
+ * **c_functionNameParams.m** to return a Matlab struct with all of the parameters needed in the main function.
+ * **c_functionNameBuild.m** to run the Matlab compiler (mcc) 
   
   We expect you to use the **jsonio library** for reading and writing the function parameters.  (See below).
   
