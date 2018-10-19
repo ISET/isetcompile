@@ -4,7 +4,7 @@ We are developing systematic methods to create 'compiled' Matlab functions.  We 
 
 ## Conceptual organization 
 
-The main directory of a function within the repository is called **functionName**.  Each such directory contains at least three functions.
+The main directory of a function within the repository is called **functionName**.  Each such directory contains at least three functions.  We prepend c_ to indicate that this is intended for compilation.
 
  * **c_functionName.m** for the main routine.
  * **c_functionNameParams.m** to return a Matlab struct with all of the parameters needed in the main function.
