@@ -12,7 +12,7 @@ The main directory of a function within the repository is called **functionName*
   
   We expect you to use the **jsonio library** for reading and writing the function parameters.  (See below).
   
-  The function c_<functionNameBuild>.m produces two critical outputs.  One file includes all of the relevant functions and data needed for the Matlab Runtime Compiler to execute. This has the name c_<functionName>, with no m-file extension. That file will only run under the exact Matlab version that you use to compile.  The second file has the name run_c_<functionName>.sh.  This is a bash script that sets up the runtime environment necessary to invoke the function. Thus, to execute the function on a platform with, say, Matlab 2017b installed, you would run
+  The function **c_functionNameBuild.m** produces two critical outputs.  One file includes all of the relevant functions and data needed for the Matlab Runtime Compiler to execute. This has the name **c_functionName**, with no m-file extension. That file will only run under the exact Matlab version that you use to compile.  The second file has the name **run_c_functionName.sh**.  This is a bash script that sets up the runtime environment necessary to invoke the function. Thus, to execute the function on a platform with, say, Matlab 2017b installed, you would run
   
       run_c_<functionName>.sh /software/Matlab/R2017b <function arguments will be placed here>
 
@@ -20,7 +20,7 @@ The main directory of a function within the repository is called **functionName*
 
   We expect that the initial portion of the compiled functions will have an input like this
 
-      function out = functionName(varargin)
+      function out = c_functionName(varargin)
       % Your comments
       %
       % Author 
