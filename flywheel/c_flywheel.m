@@ -1,7 +1,10 @@
 function s = c_flywheel(varargin)
 % Return a flywheel object from the Renderings project
 %
+% Need to pass in the token
 %
+% Requirements
+%    scitran is required for this
 %
 % ZL/BW
 
