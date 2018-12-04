@@ -1,8 +1,26 @@
-function rgb = c_sensorCompute(varargin)
-% Create compiled code for producing sensor RGB data
+function rgb = c_sensorCompute(oiFile,sensorFile)
+% Produce sensor mosaic output data (either volts or electrons)
 %
-% This function is not interesting in itself.
+% Brief description:
+%    We take an optical image as input.  The parameters determine the
+%    sensor properties (e.g., color filters, pixel size, and so
+%    forth). We write out a mat-file of the sensor responses (either
+%    volts or electrons).
 %
+% Inputs
+%   oi      -   Optical image filename.  Will be read in from Flywheel.
+%   sParams - JSON file representing a list of sensor params that can
+%             be applied using sensorSet.  Probably a JSON Flywheel
+%             file.
+%
+% Optional key/value pairs
+%   N/A
+%
+% Output
+%   sensorData - A mat-file of an array of sensor responses,
+%                volts
+%
+% 
 % The comments on how to compile this code are in the _build file.
 %
 % ZL/BW
@@ -11,6 +29,7 @@ function rgb = c_sensorCompute(varargin)
 %   c_sensorCompute_build
 %
 
+%%
 %{
 % Check the function running locally.
 
@@ -49,28 +68,30 @@ vcNewGraphWin; imagesc(rgb);
 %%  When compiled, the inputs always appear to be strings
 
 p = inputParser;
+p.addRequired('oiFile');        % Mat-file, optical image
+p.addRequired('sensorFile');    % Sensor parameters file
 
-p.addParameter('jsonfile','c_sensorCompute.json');
-p.parse(varargin{:});
+p.parse(oiFile,sensorFile);
 
-jsonFile = p.Results.jsonfile;
-params = jsonread(jsonFile);
+sensorParams = jsonread(sensorFile);
+load(oiFile);
 
-%%  Create the scene
-scene = sceneCreate(params.sceneType);
-scene = sceneSet(scene,'fov',params.sceneFov);
+%% Adjust the sensor parameters to match the input
 
-%%
-oi = oiCreate;
-oi = oiCompute(oi,scene);
-
-%%
 sensor = sensorCreate;
-sensor = sensorSetSizeToFOV(sensor,params.sensorFov);
+sFields = fieldnames(sensorParams);
+for ii=1:length(sFields)
+    sensor = sensorSet(sensor,sFields{ii},sensorParams.(sFields{ii}));
+end
+
+%% Sensor should be set.  Compute
+
 sensor = sensorCompute(sensor,oi);
 
-rgb = sensorGet(sensor,'rgb');
-save(params.outfile,'rgb');
+volts = sensorGet(sensor,'volts');
+
+% The outfile ... how do we get this into a Flywheel analysis?
+save(params.outfile,'volts');
 
 end
 
