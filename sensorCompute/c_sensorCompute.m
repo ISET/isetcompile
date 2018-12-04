@@ -33,32 +33,29 @@ function rgb = c_sensorCompute(oiFile,sensorFile)
 %{
 % Check the function running locally.
 
-% Create the parameters
-params = c_sensorComputeParams;
-params.sceneFov  = 3;
-params.sensorFov = 4;
-params.outfile   = 'localOut';
+% The oi is specified here
+scene = sceneCreate('freqorient');
+oi = oiCreate;
+oi = oiCompute(oi,scene);
+oiFile = fullfile(isetCompileRootPath,'local','oi');
+save(oiFile,'oi');
 
+% The output is specified here
+sensorParams.outfile = fullfile(isetCompileRootPath,'local','outFile');
 
-jsonwrite('c_sensorCompute.json',params);
-c_sensorCompute('jsonFile','c_sensorCompute.json');
-load(params.outfile,'rgb');
-vcNewGraphWin; imagesc(rgb);
+sensorParams.type = 'monochrome';
+sensorParams.fov = 10;
+sensorFile = fullfile(isetCompileRootPath,'local','sensorParams.json');
+
+jsonwrite(sensorFile,sensorParams);
+
+c_sensorCompute(oiFile,sensorFile);
+
+load(sensorParams.outfile,'volts');
+vcNewGraphWin; imtool(volts);
 %}
+
 %{
-% Write this function
-params = c_sensorComputeParams;
-
-% Set the parameters
-params.sceneType = 'frequency orientation';
-params.sceneFov  = 4;
-params.sensorFov = 6;
-params.outfile   = 'localOut';
-
-% Must be within the directory because we need to know the path
-chdir(fullfile(isetCompileRootPath,'sensorCompute'));
-jsonwrite('c_sensorCompute.json',params);
-
 % Execute the code
 system('./run_c_sensorCompute.sh /software/MATLAB/R2017b');
 load(params.outfile,'rgb');
@@ -74,14 +71,19 @@ p.addRequired('sensorFile');    % Sensor parameters file
 p.parse(oiFile,sensorFile);
 
 sensorParams = jsonread(sensorFile);
+
+% How do get this file from Flywheel?
 load(oiFile);
 
-%% Adjust the sensor parameters to match the input
+%% Build the sensor from the sensorFile parameters
 
-sensor = sensorCreate;
+sensor = sensorCreate(sensorParams.type);
+reservedTypes = {'outfile','type'};
 sFields = fieldnames(sensorParams);
 for ii=1:length(sFields)
-    sensor = sensorSet(sensor,sFields{ii},sensorParams.(sFields{ii}));
+    if ~ismember(sFields{ii},reservedTypes)
+        sensor = sensorSet(sensor,sFields{ii},sensorParams.(sFields{ii}));
+    end
 end
 
 %% Sensor should be set.  Compute
@@ -91,7 +93,9 @@ sensor = sensorCompute(sensor,oi);
 volts = sensorGet(sensor,'volts');
 
 % The outfile ... how do we get this into a Flywheel analysis?
-save(params.outfile,'volts');
+
+% How do we save this file in an analysis?
+save(sensorParams.outfile,'volts');
 
 end
 
